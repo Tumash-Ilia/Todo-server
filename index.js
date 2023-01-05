@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-
+require('dotenv').config();
 const app = express()
 const PORT = process.env.PORT || 8000
 
@@ -12,7 +12,7 @@ app.use('/api/todo', require('./routes/todo.route'))
 
 async function start() {
     try {
-        await mongoose.connect('mongodb+srv://admin:ponemdC0lOrmGF50@cluster0.vo4vq.mongodb.net/todoapp?retryWrites=true&w=majority', {
+        await mongoose.connect(process.env.MONGO, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
