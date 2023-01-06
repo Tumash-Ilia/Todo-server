@@ -1,13 +1,17 @@
 const {Router} = require('express')
 const router = Router()
 const Todo = require('../models/Todo')
-
+const {authenticateJWT} = require("../middleware/auth.middleware");
 
 /**
  * Pridani ukolu
  */
-router.post('/add', async (req, res) =>{
+router.post('/add', authenticateJWT, async (req, res) =>{
     try {
+        // if (!authenticateJWT(req)){
+        //     res.sendStatus(403);
+        // }
+
         const {text, userId} = req.body
 
         const todo = await new Todo({
@@ -29,7 +33,7 @@ router.post('/add', async (req, res) =>{
 /**
  * Ziskani ukolu
  */
-router.get('/', async (req, res) => {
+router.get('/', authenticateJWT, async (req, res) => {
     try {
         const {userId} = req.query
 
@@ -44,7 +48,7 @@ router.get('/', async (req, res) => {
 /**
  * Smazani ukolu
  */
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', authenticateJWT,async (req, res) => {
     try {
         const todo = await Todo.findOneAndDelete({_id: req.params.id})
         res.json(todo)
@@ -56,7 +60,7 @@ router.delete('/delete/:id', async (req, res) => {
 /**
  * Oznacit jako hotovy
  */
-router.put('/complete/:id', async (req, res) => {
+router.put('/complete/:id', authenticateJWT,async (req, res) => {
     try {
         const todo = await Todo.findOne({_id: req.params.id})
         todo.completed = !todo.completed
@@ -71,7 +75,7 @@ router.put('/complete/:id', async (req, res) => {
 /**
  * Oznacit jako dulezity
  */
-router.put('/important/:id', async (req, res) => {
+router.put('/important/:id', authenticateJWT, async (req, res) => {
     try {
         const todo = await Todo.findOne({_id: req.params.id})
         todo.important = !todo.important
@@ -86,7 +90,7 @@ router.put('/important/:id', async (req, res) => {
 /**
  * Uprava ukolu
  */
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', authenticateJWT,async (req, res) => {
     try {
         const {text} = req.body
         const todo = await Todo.findOneAndUpdate({_id: req.params.id}, {text: text}, {new: true})
@@ -99,7 +103,7 @@ router.put('/update/:id', async (req, res) => {
 /***
  * Ziskat jeden ukol podle id
  */
-router.get('/get/:id', async (req, res) => {
+router.get('/get/:id', authenticateJWT, async (req, res) => {
     try {
         const {text} = req.body
         const todo = await Todo.findById({_id: req.params.id})
@@ -112,7 +116,7 @@ router.get('/get/:id', async (req, res) => {
 /**
  * Seznam hotovych ukolu
  */
-router.get('/completed', async (req, res) => {
+router.get('/completed', authenticateJWT, async (req, res) => {
     try {
         const {userId} = req.query
         const todo = await Todo.find({ owner: userId, completed: true})
@@ -125,7 +129,7 @@ router.get('/completed', async (req, res) => {
 /**
  * Seznam nesplnenych ukolu
  */
-router.get('/uncompleted', async (req, res) => {
+router.get('/uncompleted', authenticateJWT, async (req, res) => {
     try {
         const {userId} = req.query
         const todo = await Todo.find({ owner: userId, completed: false})
