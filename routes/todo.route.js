@@ -45,6 +45,18 @@ router.get('/', authenticateJWT, async (req, res) => {
     }
 })
 
+router.get('/json', async (req, res) => {
+    try {
+        const {userId} = req.query
+
+        const todo = await Todo.find({ owner: userId})
+
+        res.json(todo)
+    }catch (e) {
+        console.log(e)
+    }
+})
+
 /**
  * Smazani ukolu
  */
